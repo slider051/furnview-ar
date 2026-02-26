@@ -1,49 +1,63 @@
 'use client'
 
-import { useRef } from 'react'
-import { Mesh, Matrix4 } from 'three'
+import { useRef, useState, useCallback } from 'react'
+import { Group, Matrix4 } from 'three'
 import { useHitTest } from '@react-three/xr'
 import { useFurnitureStore } from '@/store/furnitureStore'
 import { FurnitureGhost } from '@/features/furniture/components/FurnitureGhost'
 
 export function HitTestPlacement() {
-  const meshRef = useRef<Mesh>(null)
+  const ghostRef = useRef<Group>(null)
   const hitPositionRef = useRef<[number, number, number]>([0, 0, 0])
-  const hasHitRef = useRef(false)
+  const [hasHit, setHasHit] = useState(false)
   const { placementMode, activeCatalogId, placeItem } = useFurnitureStore()
 
   useHitTest((hitMatrix: Matrix4) => {
-    if (!meshRef.current) return
+    if (!ghostRef.current) return
+
     hitMatrix.decompose(
-      meshRef.current.position,
-      meshRef.current.quaternion,
-      meshRef.current.scale
+      ghostRef.current.position,
+      ghostRef.current.quaternion,
+      ghostRef.current.scale
     )
+    // scale은 hitMatrix에서 오는 값이 아닌 1로 고정
+    ghostRef.current.scale.set(1, 1, 1)
+
     hitPositionRef.current = [
-      meshRef.current.position.x,
-      meshRef.current.position.y,
-      meshRef.current.position.z,
+      ghostRef.current.position.x,
+      ghostRef.current.position.y,
+      ghostRef.current.position.z,
     ]
-    hasHitRef.current = true
+
+    if (!hasHit) setHasHit(true)
   })
 
-  const handleTap = () => {
-    if (placementMode === 'placing' && activeCatalogId && hasHitRef.current) {
-      placeItem(activeCatalogId, hitPositionRef.current)
+  const handleTap = useCallback(() => {
+    if (placementMode === 'placing' && activeCatalogId && hasHit) {
+      placeItem(activeCatalogId, [...hitPositionRef.current])
     }
-  }
+  }, [placementMode, activeCatalogId, hasHit, placeItem])
 
-  if (placementMode !== 'placing' || !activeCatalogId) return null
+  const isPlacing = placementMode === 'placing' && activeCatalogId
 
   return (
-    <group>
-      <mesh ref={meshRef} onClick={handleTap}>
-        <FurnitureGhost catalogId={activeCatalogId} position={[0, 0, 0]} />
-      </mesh>
-      <mesh onClick={handleTap} visible={false}>
+    <>
+      {/* 고스트: hit test 위치를 추적하는 그룹 */}
+      {isPlacing && (
+        <group ref={ghostRef} visible={hasHit}>
+          <FurnitureGhost catalogId={activeCatalogId} position={[0, 0, 0]} />
+        </group>
+      )}
+
+      {/* 탭 감지용 투명 plane — 항상 존재 */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0, 0]}
+        onClick={handleTap}
+      >
         <planeGeometry args={[100, 100]} />
-        <meshBasicMaterial transparent opacity={0} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
-    </group>
+    </>
   )
 }

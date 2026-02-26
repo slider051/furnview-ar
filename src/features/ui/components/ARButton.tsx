@@ -6,10 +6,18 @@ export function ARStartButton() {
   return (
     <XRARButton
       sessionInit={{
-        optionalFeatures: ['hit-test', 'dom-overlay', 'dom-overlay-for-handheld-ar'],
-        domOverlay: typeof document !== 'undefined' ? { root: document.body } : undefined,
+        requiredFeatures: ['hit-test'],
+        optionalFeatures: ['dom-overlay', 'dom-overlay-for-handheld-ar', 'local-floor'],
+        domOverlay: typeof document !== 'undefined'
+          ? { root: document.getElementById('ui-layer') ?? document.body }
+          : undefined,
       }}
-      className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg transition-colors text-sm"
-    />
+    >
+      {(status: string) => {
+        if (status === 'unsupported') return null
+        if (status === 'entered') return 'AR 종료'
+        return 'AR 시작'
+      }}
+    </XRARButton>
   )
 }

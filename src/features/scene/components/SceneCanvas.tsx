@@ -64,7 +64,7 @@ export function SceneCanvas() {
         </Canvas>
       </div>
 
-      {/* 레이어 2: UI 오버레이 — Canvas와 완전 분리 */}
+      {/* 레이어 2: UI 오버레이 — DOM Overlay root로도 사용됨 */}
       <div
         id="ui-layer"
         style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 10, pointerEvents: 'none' }}
@@ -81,15 +81,15 @@ export function SceneCanvas() {
           </div>
         )}
 
-        {/* AR 시작 버튼 */}
+        {/* AR 시작 버튼 — 상단 중앙 */}
         {arSupported && (
           <div style={{ position: 'absolute', top: 56, left: '50%', transform: 'translateX(-50%)', pointerEvents: 'auto' }}>
             <ARStartButton />
           </div>
         )}
 
-        {/* 도구 버튼 — 우상단 */}
-        <div style={{ position: 'absolute', top: 16, right: 16, pointerEvents: 'auto' }}>
+        {/* 도구 버튼 — 우측 중앙 */}
+        <div style={{ position: 'absolute', top: '50%', right: 16, transform: 'translateY(-50%)', pointerEvents: 'auto' }}>
           <ToolBar />
         </div>
 
