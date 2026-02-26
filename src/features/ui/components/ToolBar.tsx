@@ -17,7 +17,7 @@ export function ToolBar() {
   const hasItems = placedItems.length > 0
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {hasSelection && (
         <>
           <ToolButton
@@ -41,7 +41,7 @@ export function ToolBar() {
             onClick={() => updateScale(selectedItemId, -FURNITURE.SCALE_STEP)}
           />
           {/* 삭제 버튼 — 간격 벌려서 오조작 방지 */}
-          <div className="mt-4">
+          <div className="mt-6">
             <ToolButton
               icon={ICONS.trash}
               title="삭제"
@@ -80,7 +80,7 @@ function ToolButton({ icon, title, onClick, variant = 'default' }: ToolButtonPro
       onClick={onClick}
       title={title}
       className={`
-        w-12 h-12 rounded-xl backdrop-blur-md text-white text-xl
+        w-[72px] h-[72px] rounded-2xl backdrop-blur-md text-white text-3xl
         flex items-center justify-center transition-colors ${bgClass}
       `}
     >
