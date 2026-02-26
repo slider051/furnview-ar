@@ -1,0 +1,5 @@
+export { FurnitureModel } from './components/FurnitureModel'
+export { PlacedFurniture } from './components/PlacedFurniture'
+export { FurnitureGhost } from './components/FurnitureGhost'
+export { FURNITURE_CATALOG, getCatalogEntry } from './data/catalog'
+export type { CatalogEntry, PlacedItem, PlacementMode } from './types/furniture.types'
